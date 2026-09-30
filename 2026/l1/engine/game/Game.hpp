@@ -6,12 +6,10 @@ class CGame
 {
     public:
 
-        CGame() = default;
-        ~CGame() = default;
+        CGame();
+        ~CGame();
 
-        void Initialize();
         void Run();
-        void Shutdown();
 
     private:
 

@@ -2,20 +2,27 @@
 
 #include "Game.hpp"
 
-void CGame::Initialize()
+CGame::CGame()
 {
-    m_Window.create(sf::VideoMode({ 800, 600 }), "Game Window");
-    m_DeltaTime = 0.0f;
-    m_Clock.restart();
-    m_Window.setFramerateLimit(60);
+  m_Window.create(sf::VideoMode({ 800, 600 }), "Game Window");
+  m_DeltaTime = 0.0f;
+  m_Clock.restart();
+  m_Window.setFramerateLimit(60);
 
 #if defined(DEBUG)
-    const bool imgui_sfml_init_ok = ImGui::SFML::Init(m_Window);
+  const bool imgui_sfml_init_ok = ImGui::SFML::Init(m_Window);
 
-    if (!imgui_sfml_init_ok)
-    {
-        throw std::runtime_error("Failed to initialize ImGui-SFML");
-		}
+  if (!imgui_sfml_init_ok)
+  {
+    throw std::runtime_error("Failed to initialize ImGui-SFML");
+  }
+#endif
+}
+
+CGame::~CGame()
+{
+#if defined(DEBUG)
+  ImGui::SFML::Shutdown();
 #endif
 }
 
@@ -28,13 +35,6 @@ void CGame::Run()
         Frame();
         Render();
     }
-}
-
-void CGame::Shutdown()
-{
-#if defined(DEBUG)
-    ImGui::SFML::Shutdown();
-#endif
 }
 
 void CGame::Frame()

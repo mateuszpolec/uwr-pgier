@@ -3,6 +3,5 @@
 int main()
 {
     CGame game;
-    game.Initialize();
     game.Run();
 }
