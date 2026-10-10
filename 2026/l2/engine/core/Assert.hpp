@@ -5,7 +5,7 @@
 
 namespace engine::core
 {
-	[[noreturn]] void Assert(std::string_view expression, std::string_view message, const char* file, int line, const char* function);
+	[[noreturn]] void Assert(std::string_view _expression, std::string_view _message, const char* _file, int _line, const char* _function);
 }
 
 #if defined(_MSC_VER)

@@ -18,7 +18,7 @@ namespace engine::core
 	namespace
 	{
 #if defined(WINDOWS)
-		LONG WINAPI OnUnhandledException(EXCEPTION_POINTERS* exception_pointers)
+		LONG WINAPI OnUnhandledException(EXCEPTION_POINTERS* _exception_pointers)
 		{
 			LOG_CRITICAL("Unhandled exception occurred. Generating crash dump...");
 
@@ -34,13 +34,13 @@ namespace engine::core
 
 			HANDLE file_handle = CreateFileW(crash_dump_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-			LOG_CRITICAL("Crash! Exception 0x{:08X} at {}. Minidump: {}", exception_pointers->ExceptionRecord->ExceptionCode, exception_pointers->ExceptionRecord->ExceptionAddress, crash_dump_file.string());
+			LOG_CRITICAL("Crash! Exception 0x{:08X} at {}. Minidump: {}", _exception_pointers->ExceptionRecord->ExceptionCode, _exception_pointers->ExceptionRecord->ExceptionAddress, crash_dump_file.string());
 
 			if (file_handle != INVALID_HANDLE_VALUE)
 			{
 				MINIDUMP_EXCEPTION_INFORMATION exception_info;
 				exception_info.ThreadId = GetCurrentThreadId();
-				exception_info.ExceptionPointers = exception_pointers;
+				exception_info.ExceptionPointers = _exception_pointers;
 				exception_info.ClientPointers = FALSE;
 				MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), file_handle, MiniDumpWithFullMemory, &exception_info, nullptr, nullptr);
 				CloseHandle(file_handle);

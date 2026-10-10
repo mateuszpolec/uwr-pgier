@@ -13,9 +13,9 @@
 
 namespace engine::core
 {
-	void Assert(std::string_view expression, std::string_view message, const char* file, int line, const char* function)
+	void Assert(std::string_view _expression, std::string_view _message, const char* _file, int _line, const char* _function)
 	{
-		LOG_ERROR("Assertion failed: {}. Message: {}. File: {}. Line: {}. Function: {}", expression, message, file, line, function);
+		LOG_ERROR("Assertion failed: {}. Message: {}. File: {}. Line: {}. Function: {}", _expression, _message, _file, _line, _function);
 
 #if defined(WINDOWS)
 		static constexpr int MAX_CALLSTACK_DEPTH = 64;

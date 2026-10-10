@@ -36,17 +36,17 @@ namespace engine::events
 			}
 
 			template<typename TEvent, typename... Args>
-			void Submit(Args&&... args)
+			void Submit(Args&&... _args)
 			{
-				TEvent event{ std::forward<Args>(args)... };
+				TEvent event{ std::forward<Args>(_args)... };
 				Dispatch(event);
 			}
 
 			template<typename TEvent, typename... Args>
-			void QueueWithTimeDelay(float _delay, Args&&... args)
+			void QueueWithTimeDelay(float _delay, Args&&... _args)
 			{
 				SQueuedEvent queued_event;
-				queued_event.Event = std::make_unique<TEvent>(TEvent{ std::forward<Args>(args)... });
+				queued_event.Event = std::make_unique<TEvent>(TEvent{ std::forward<Args>(_args)... });
 				
 				queued_event.DispatchFrame = 0; // No frame delay, only time delay
 				queued_event.DispatchTime = m_FrameTime.TimeElapsedScaled + _delay;
@@ -55,10 +55,10 @@ namespace engine::events
 			}
 
 			template<typename TEvent, typename... Args>
-			void QueueWithFrameDelay(uint32_t _frame_delay, Args&&... args)
+			void QueueWithFrameDelay(uint32_t _frame_delay, Args&&... _args)
 			{
 				SQueuedEvent queued_event;
-				queued_event.Event = std::make_unique<TEvent>(TEvent{ std::forward<Args>(args)... });
+				queued_event.Event = std::make_unique<TEvent>(TEvent{ std::forward<Args>(_args)... });
 
 				queued_event.DispatchTime = 0.0f; // No time delay, only frame delay
 				queued_event.DispatchFrame = m_FrameTime.CurrentFrame + _frame_delay;

@@ -29,9 +29,9 @@ namespace engine::events
 ///////////////////////////////////////////////////////////////////////////////////////
 	struct SKeyPressedEvent : public TEvent<SKeyPressedEvent>
 	{
-		SKeyPressedEvent(sf::Keyboard::Key _code, sf::Keyboard::Scancode _scancode, bool _alt, bool _control, bool _shift, bool _system)
+		SKeyPressedEvent(sf::Keyboard::Key _code, sf::Keyboard::Scancode _scan_code, bool _alt, bool _control, bool _shift, bool _system)
 			: Code(_code)
-			, Scancode(_scancode)
+			, Scancode(_scan_code)
 			, Alt(_alt)
 			, Control(_control)
 			, Shift(_shift)
@@ -50,9 +50,9 @@ namespace engine::events
 ///////////////////////////////////////////////////////////////////////////////////////
 	struct SKeyReleasedEvent : public TEvent<SKeyReleasedEvent>
 	{
-		SKeyReleasedEvent(sf::Keyboard::Key _code, sf::Keyboard::Scancode _scancode)
+		SKeyReleasedEvent(sf::Keyboard::Key _code, sf::Keyboard::Scancode _scan_code)
 			: Code(_code)
-			, Scancode(_scancode)
+			, Scancode(_scan_code)
 		{
 		}
 
