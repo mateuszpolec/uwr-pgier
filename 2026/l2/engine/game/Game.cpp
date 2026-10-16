@@ -47,7 +47,7 @@ namespace engine::game
   {
     while (m_Window.isOpen())
     {
-			const float delta_time = m_Clock.getElapsedTime().asSeconds();
+			const float delta_time = m_Clock.restart().asSeconds();
       m_FrameTime.Advance(delta_time);
 
       Frame();
