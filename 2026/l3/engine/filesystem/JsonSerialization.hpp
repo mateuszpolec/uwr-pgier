@@ -16,6 +16,7 @@ namespace engine::filesystem
 			std::filesystem::create_directories(_path.parent_path());
 		}
 
+		std::ofstream file(_path);
 		if (!file.is_open())
 		{
 			return false;
