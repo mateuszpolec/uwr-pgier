@@ -83,7 +83,9 @@ namespace engine::game
   {
     while (const std::optional event = m_Window.pollEvent())
     {
+#if defined(DEBUG)
       ImGui::SFML::ProcessEvent(m_Window, *event);
+#endif
 
       if (event->is<sf::Event::Closed>())
       {

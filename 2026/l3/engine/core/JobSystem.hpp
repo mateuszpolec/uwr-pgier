@@ -28,10 +28,10 @@ namespace engine::core
 			template<typename T>
 			job_id_t Submit(std::function<T()> _job, std::function<void(T)> _callback)
 			{
-				auto type_erased_job = [job = std::move(_job), callback = std::move(_callback)]()
+				auto type_erased_job = [job = std::move(_job), callback = std::move(_callback)]() -> std::function<void()>
 				{
 					T result = job();
-					return[callback = std::move(callback), result = std::move(result)]() mutable -> std::function<void()>
+					return[callback = std::move(callback), result = std::move(result)]() mutable
 					{
 							if (callback)
 							{
@@ -46,10 +46,16 @@ namespace engine::core
 			job_id_t Submit(std::function<void()> _job, std::function<void()> _callback)
 			{
 				auto type_erased_job = [job = std::move(_job), callback = std::move(_callback)]() -> std::function<void()>
-				{
-					job();
-					return std::move(callback);
-				};
+					{
+						job();
+						return [callback = std::move(callback)]()
+							{
+								if (callback)
+								{
+									callback();
+								}
+							};
+					};
 
 				return SubmitJob(std::move(type_erased_job));
 			}

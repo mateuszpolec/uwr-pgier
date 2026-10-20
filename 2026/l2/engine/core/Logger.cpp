@@ -32,7 +32,7 @@ namespace engine::core
 
 		s_LogDirectory = GetDefaultLogDirectory();
 
-		if (std::filesystem::exists(s_LogDirectory))
+		if (!std::filesystem::exists(s_LogDirectory))
 		{
 			std::filesystem::create_directories(s_LogDirectory);
 		}

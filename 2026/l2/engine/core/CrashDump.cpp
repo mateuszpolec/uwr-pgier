@@ -20,35 +20,73 @@ namespace engine::core
 #if defined(WINDOWS)
 		LONG WINAPI OnUnhandledException(EXCEPTION_POINTERS* _exception_pointers)
 		{
-			LOG_CRITICAL("Unhandled exception occurred. Generating crash dump...");
-
-			const std::filesystem::path crash_dump_path = engine::filesystem::AppData() / "uwr" / "dumps";
-
-			const auto now = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
-			const std::filesystem::path crash_dump_file = crash_dump_path / std::format("crash_dump_{:%Y-%m-%d_%H-%M-%S}.dmp", std::chrono::floor<std::chrono::seconds>(now));
-
-			if (!std::filesystem::exists(crash_dump_path))
+			static LONG s_handling = 0;
+			if (InterlockedCompareExchange(&s_handling, 1, 0) != 0)
 			{
-				std::filesystem::create_directories(crash_dump_path);
+				return EXCEPTION_EXECUTE_HANDLER;
 			}
 
-			HANDLE file_handle = CreateFileW(crash_dump_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+			wchar_t appdata_path[MAX_PATH]{};
+			const DWORD appdata_length = GetEnvironmentVariableW(L"APPDATA", appdata_path, MAX_PATH);
 
-			LOG_CRITICAL("Crash! Exception 0x{:08X} at {}. Minidump: {}", _exception_pointers->ExceptionRecord->ExceptionCode, _exception_pointers->ExceptionRecord->ExceptionAddress, crash_dump_file.string());
+			wchar_t crash_dump_file[MAX_PATH]{};
+			BOOL dump_written = FALSE;
+			DWORD dump_error = ERROR_SUCCESS;
 
-			if (file_handle != INVALID_HANDLE_VALUE)
+			if (appdata_length > 0 && appdata_length < MAX_PATH)
 			{
-				MINIDUMP_EXCEPTION_INFORMATION exception_info;
-				exception_info.ThreadId = GetCurrentThreadId();
-				exception_info.ExceptionPointers = _exception_pointers;
-				exception_info.ClientPointers = FALSE;
-				MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), file_handle, MiniDumpWithFullMemory, &exception_info, nullptr, nullptr);
-				CloseHandle(file_handle);
-				LOG_CRITICAL("Crash dump generated at: {}", crash_dump_file.string());
+				SYSTEMTIME local_time{};
+				GetLocalTime(&local_time);
+
+				wchar_t crash_dump_directory[MAX_PATH]{};
+				swprintf_s(crash_dump_directory, L"%s\\uwr", appdata_path);
+				CreateDirectoryW(crash_dump_directory, nullptr);
+				swprintf_s(crash_dump_directory, L"%s\\uwr\\dumps", appdata_path);
+				CreateDirectoryW(crash_dump_directory, nullptr);
+
+				swprintf_s(crash_dump_file, L"%s\\crash_dump_%04u-%02u-%02u_%02u-%02u-%02u.dmp",
+					crash_dump_directory,
+					local_time.wYear, local_time.wMonth, local_time.wDay,
+					local_time.wHour, local_time.wMinute, local_time.wSecond);
+
+				const HANDLE file_handle = CreateFileW(crash_dump_file, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+				if (file_handle != INVALID_HANDLE_VALUE)
+				{
+					MINIDUMP_EXCEPTION_INFORMATION exception_info;
+					exception_info.ThreadId = GetCurrentThreadId();
+					exception_info.ExceptionPointers = _exception_pointers;
+					exception_info.ClientPointers = FALSE;
+
+					constexpr MINIDUMP_TYPE dump_type = static_cast<MINIDUMP_TYPE>(
+						MiniDumpWithDataSegs |
+						MiniDumpWithHandleData |
+						MiniDumpWithThreadInfo |
+						MiniDumpWithUnloadedModules |
+						MiniDumpWithIndirectlyReferencedMemory);
+
+					dump_written = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), file_handle, dump_type, &exception_info, nullptr, nullptr);
+					dump_error = dump_written ? ERROR_SUCCESS : GetLastError();
+
+					FlushFileBuffers(file_handle);
+					CloseHandle(file_handle);
+				}
+				else
+				{
+					dump_error = GetLastError();
+				}
+			}
+
+			LOG_CRITICAL("Crash! Exception 0x{:08X} at {}.", _exception_pointers->ExceptionRecord->ExceptionCode, _exception_pointers->ExceptionRecord->ExceptionAddress);
+
+			const std::filesystem::path crash_dump_path_for_log(crash_dump_file);
+			if (dump_written)
+			{
+				LOG_CRITICAL("Crash dump generated at: {}", crash_dump_path_for_log.string());
 			}
 			else
 			{
-				LOG_CRITICAL("Failed to create crash dump file: {}", crash_dump_file.string());
+				LOG_CRITICAL("Crash dump FAILED. Error/HRESULT: 0x{:08X}. File: {}", dump_error, crash_dump_path_for_log.string());
 			}
 
 			static constexpr int MAX_CALLSTACK_DEPTH = 64;
