@@ -65,11 +65,11 @@ namespace engine::core
 			if (idle_spins < MAX_IDLE_SPINS)
 			{
 				++idle_spins;
-				std::this_thread::yield();
+				_mm_pause();
 			}
 			else
 			{
-				_mm_pause();
+				std::this_thread::yield();
 			}
 		}
 	}
