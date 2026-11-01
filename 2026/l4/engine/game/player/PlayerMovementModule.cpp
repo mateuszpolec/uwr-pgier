@@ -39,9 +39,9 @@ namespace engine::game::player
 			}
 		}
 
-		if (m_Direction.length() > 0.f)
+		if (dir.length() > 0.f)
 		{
-			dir = m_Direction.normalized();
+			dir = dir.normalized();
 		}
 
 		m_Velocity = dir * MOVE_SPEED;

@@ -52,7 +52,6 @@ namespace engine::game::player
 
 		std::bitset<MovementKeys.size()> m_PressedKeys;
 
-		sf::Vector2f m_Direction;
 		sf::Vector2f m_Velocity;
 	};
 }
