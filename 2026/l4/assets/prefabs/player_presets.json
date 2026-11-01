@@ -1,0 +1,13 @@
+{
+    "default": {
+        "Components": {
+            "Transform": { "Position": [100, 100] }
+        }
+    },
+    "big": {
+        "Components": {
+            "Transform": { "Position": [100, 100], "Scale": [8, 8] },
+            "Renderable": { "Color": [0, 128, 255] }
+        }
+    }
+}

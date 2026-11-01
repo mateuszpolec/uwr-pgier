@@ -1,0 +1,6 @@
+{
+    "Components": {
+        "Transform": {},
+        "Renderable": { "Shape": "Rectangle", "Size": [10, 10], "Color": [0, 255, 0] }
+    }
+}
