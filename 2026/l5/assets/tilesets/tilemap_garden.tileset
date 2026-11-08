@@ -1,0 +1,17 @@
+{
+    "Columns": 39,
+    "Margin": [
+        0,
+        0
+    ],
+    "Rows": 38,
+    "Spacing": [
+        0,
+        0
+    ],
+    "TexturePath": "textures\\tilemap_garden.png",
+    "TileSize": [
+        32,
+        32
+    ]
+}
