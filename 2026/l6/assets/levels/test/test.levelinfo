@@ -1,0 +1,22 @@
+{
+    "Layers": [
+        {
+            "Name": "Ground",
+            "Type": "Tiles"
+        },
+        {
+            "Name": "Objects",
+            "Type": "Objects"
+        },
+        {
+            "Name": "Decoration",
+            "Type": "Tiles"
+        }
+    ],
+    "Name": "test",
+    "StreamingRadius": 1,
+    "TileSize": [
+        32,
+        32
+    ]
+}

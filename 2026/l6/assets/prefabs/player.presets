@@ -1,0 +1,13 @@
+{
+    "default": {
+        "Components": {
+            "Transform": { "Position": [100, 100] }
+        }
+    },
+    "big": {
+        "Components": {
+            "Transform": { "Position": [100, 100], "Scale": [3, 3] },
+            "Animatable": { "Speed": 1.5 }
+        }
+    }
+}

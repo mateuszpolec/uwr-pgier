@@ -1,0 +1,13 @@
+{
+    "Components": {
+        "Transform": {},
+        "Renderable": { "Layer": "Objects" },
+        "Direction": { "Direction": "Down" },
+        "Animatable": {
+            "Animation": "player_move",
+            "Sequence": "idle_down",
+            "Speed": 1.0,
+            "AutoPlay": true
+        }
+    }
+}

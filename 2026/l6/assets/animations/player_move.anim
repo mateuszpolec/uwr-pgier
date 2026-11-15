@@ -1,0 +1,241 @@
+{
+    "Sequences": [
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 0
+                }
+            ],
+            "Name": "idle_left",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 1
+                }
+            ],
+            "Name": "idle_right",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 2
+                }
+            ],
+            "Name": "idle_down",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 3
+                }
+            ],
+            "Name": "idle_up",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 8
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 9
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 10
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 11
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 12
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 13
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 14
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 15
+                }
+            ],
+            "Name": "walk_right",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 16
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 17
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 18
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 19
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 20
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 21
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 22
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 23
+                }
+            ],
+            "Name": "walk_up",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 24
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 25
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 26
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 27
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 28
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 29
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 30
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 31
+                }
+            ],
+            "Name": "walk_down",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        },
+        {
+            "Frames": [
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 32
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 33
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 34
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 35
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 36
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 37
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 38
+                },
+                {
+                    "Duration": 0.20000000298023224,
+                    "Events": [],
+                    "TileIndex": 39
+                }
+            ],
+            "Name": "walk_left",
+            "PlayMode": "Loop",
+            "Speed": 1.0
+        }
+    ],
+    "Tileset": "tilemap_player_walk"
+}
