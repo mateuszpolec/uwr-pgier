@@ -17,7 +17,6 @@ namespace engine::level
 		UnloadLevel();
 	}
 
-	//////////////// Level lifecycle ////////////////////////
 	bool CLevelManager::LoadLevel(const std::string& _name)
 	{
 		UnloadLevel();
@@ -37,7 +36,7 @@ namespace engine::level
 		}
 
 		m_Info = std::move(*info);
-		LOG_INFO("Level '{}' loaded, {} layers, streaming radius {}", m_Info->Name, m_Info->Layers.size(), m_Info->StreamingRadius);
+		LOG_INFO("Level '{}' loaded, {} layers, streaming radius {}", m_Info->Name, m_Info->Layers.size(), engine::game::CGame::Get().GetGameSettings().GetStreamingRadius());
 		return true;
 	}
 
@@ -147,29 +146,32 @@ namespace engine::level
 		{
 			const SChunkCoordinates min_chunk = WorldToChunk(_focus_world_rect.position);
 			const SChunkCoordinates max_chunk = WorldToChunk(_focus_world_rect.position + _focus_world_rect.size);
-			const int radius = m_Info->StreamingRadius;
 
-			std::unordered_set<SChunkCoordinates, SChunkCoordinatesHash> wanted;
-			for (int y = min_chunk.Y - radius; y <= max_chunk.Y + radius; ++y)
-			{
-				for (int x = min_chunk.X - radius; x <= max_chunk.X + radius; ++x)
-				{
-					wanted.insert({ x, y });
-				}
-			}
+			const int load_radius = std::max(0, engine::game::CGame::Get().GetGameSettings().GetStreamingRadius());
+			const int keep_radius = load_radius + 1; // +1 as a margin error buffer to avoid loading & unloading chunks on the edge of the radius
 
-			for (const SChunkCoordinates& coord : wanted)
-			{
-				if (!m_Chunks.contains(coord) && !m_PendingLoads.contains(coord))
+			auto fn_in_range = [&min_chunk, &max_chunk](const SChunkCoordinates& _coord, int _radius)
 				{
-					RequestLoad(coord);
+					return _coord.X >= min_chunk.X - _radius && _coord.X <= max_chunk.X + _radius
+						&& _coord.Y >= min_chunk.Y - _radius && _coord.Y <= max_chunk.Y + _radius;
+				};
+
+			for (int y = min_chunk.Y - load_radius; y <= max_chunk.Y + load_radius; ++y)
+			{
+				for (int x = min_chunk.X - load_radius; x <= max_chunk.X + load_radius; ++x)
+				{
+					const SChunkCoordinates coord{ x, y };
+					if (!m_Chunks.contains(coord) && !m_PendingLoads.contains(coord))
+					{
+						RequestLoad(coord);
+					}
 				}
 			}
 
 			std::vector<SChunkCoordinates> to_unload;
 			for (const auto& [coord, chunk] : m_Chunks)
 			{
-				if (!wanted.contains(coord) && chunk->State == EChunkState::Ready)
+				if (chunk->State == EChunkState::Ready && !fn_in_range(coord, keep_radius))
 				{
 					to_unload.push_back(coord);
 				}
@@ -178,6 +180,8 @@ namespace engine::level
 			{
 				Unload(coord);
 			}
+
+			std::erase_if(m_PendingLoads, [&](const SChunkCoordinates& _coord) { return !fn_in_range(_coord, keep_radius); });
 		}
 
 		for (auto& [coord, chunk] : m_Chunks)
@@ -529,6 +533,14 @@ namespace engine::level
 		}
 		
 		return files;
+	}
+
+	void CLevelManager::RebuildChunksGeometry()
+	{
+		for (auto& [coord, chunk] : m_Chunks)
+		{
+			chunk->RebuildGeometry();
+		}
 	}
 
 	void CLevelManager::RequestLoad(const SChunkCoordinates& _coord)

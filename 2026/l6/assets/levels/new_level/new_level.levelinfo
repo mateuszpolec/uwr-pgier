@@ -1,0 +1,21 @@
+{
+    "Layers": [
+        {
+            "Name": "Ground",
+            "Type": "Tiles"
+        },
+        {
+            "Name": "Decoration",
+            "Type": "Tiles"
+        },
+        {
+            "Name": "Objects",
+            "Type": "Objects"
+        }
+    ],
+    "Name": "new_level",
+    "TileSize": [
+        32,
+        32
+    ]
+}

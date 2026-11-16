@@ -6,6 +6,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 #include "engine/assets/AssetHandle.hpp"
 #include "engine/assets/TilesetManager.hpp"
@@ -57,6 +58,9 @@ namespace engine::level
 
 		[[nodiscard]] static constexpr int LocalTileIndex(int _x, int _y) { return _y * CHUNK_SIZE + _x; }
 
+	public:
+
+		static bool BATCH_RENDERING_ENABLED;
 		EChunkState State = EChunkState::Ready;
 
 	private:
@@ -74,6 +78,7 @@ namespace engine::level
 		SChunkData m_Data;
 		sf::Vector2i m_TileSize;
 		std::vector<std::vector<STilesetBatch>> m_Layers;
+		std::vector<std::vector<sf::Sprite>> m_LayersSprite;
 		std::vector<std::vector<engine::ecs::entity_id_t>> m_Entities;
 
 		bool m_Dirty = false;

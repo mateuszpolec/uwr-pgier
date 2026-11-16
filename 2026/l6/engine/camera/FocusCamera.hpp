@@ -29,7 +29,6 @@ namespace engine::camera
 		float Smoothing = 10.f;
 		sf::Vector2f Offset{ 0.f, 0.f };
 		bool SnapOnActivate = false;
-		bool KeepPreviousZoom = true;
 		float DefaultZoom = 1.f;
 
 	private:

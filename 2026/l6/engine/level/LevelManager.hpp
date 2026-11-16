@@ -74,6 +74,7 @@ namespace engine::level
 		[[nodiscard]] CChunk& GetOrCreateChunk(const SChunkCoordinates& _coord);
 		bool RemoveChunk(const SChunkCoordinates& _coord);
 		[[nodiscard]] static std::vector<std::filesystem::path> ListChunkFiles();
+		void RebuildChunksGeometry();
 
 		[[nodiscard]] const std::unordered_map<SChunkCoordinates, std::unique_ptr<CChunk>, SChunkCoordinatesHash>& GetChunks() const { return m_Chunks; }
 		[[nodiscard]] const SLevelInfo& GetInfo() const { return *m_Info; }

@@ -31,8 +31,10 @@ namespace engine::game
     engine::core::CLogger::Initialize();
     engine::core::InitializeCrashDump();
 
+		m_GameSettings = std::make_unique<engine::game::CGameSettings>();
+    m_GameSettings->LoadSettings();
+
     m_Window.create(sf::VideoMode({ 800, 600 }), "Game Window");
-    m_Window.setFramerateLimit(60);
 
     m_EventDispatcher = std::make_unique<engine::events::CEventDispatcher>(m_FrameTime);
 

@@ -15,7 +15,7 @@ namespace engine::camera
 	void CFocusCamera::OnActivated(const SCameraState& _previous)
 	{
 		m_State.Center = _previous.Center;
-		m_State.Zoom = KeepPreviousZoom ? _previous.Zoom : DefaultZoom;
+		m_State.Zoom = DefaultZoom;
 
 		if (SnapOnActivate)
 		{

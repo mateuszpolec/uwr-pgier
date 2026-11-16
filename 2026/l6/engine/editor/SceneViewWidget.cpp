@@ -49,10 +49,11 @@ namespace engine::editor
 	void CSceneViewWidget::RenderHeader()
 	{
 		engine::level::CLevelManager& level = engine::game::CGame::Get().GetLevelManager();
+		engine::game::CGameSettings& settings = engine::game::CGame::Get().GetGameSettings();
 		const engine::level::SLevelInfo& info = level.GetInfo();
 
 		ImGui::Text("Level: %s", info.Name.c_str());
-		ImGui::Text("Tile size: %dx%d | Streaming radius: %d", info.TileSize.x, info.TileSize.y, info.StreamingRadius);
+		ImGui::Text("Tile size: %dx%d | Streaming radius: %d", info.TileSize.x, info.TileSize.y, settings.GetStreamingRadius());
 		ImGui::Text("Loaded chunks: %zu | Pending loads: %zu", level.GetChunks().size(), level.GetPendingLoadsCount());
 
 		ImGui::Checkbox("Streaming", &level.StreamingEnabled);

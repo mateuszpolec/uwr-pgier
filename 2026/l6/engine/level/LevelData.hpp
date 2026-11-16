@@ -32,7 +32,6 @@ namespace engine::level
 
 		std::string Name;
 		sf::Vector2i TileSize{ 32, 32 };
-		int StreamingRadius = 1;
 		std::vector<SLayerInfo> Layers;
 
 		[[nodiscard]] int FindLayerIndex(std::string_view _name) const
@@ -79,5 +78,5 @@ namespace engine::level
 			_data.Layers = std::move(layers);
 		}
 	};
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SLevelInfo, Name, TileSize, StreamingRadius, Layers)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(SLevelInfo, Name, TileSize, Layers)
 }

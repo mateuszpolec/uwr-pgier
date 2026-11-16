@@ -34,7 +34,6 @@ namespace engine::editor
 			engine::level::SLevelInfo info;
 			info.Name = "new_level";
 			info.TileSize = { 32, 32 };
-			info.StreamingRadius = 1;
 			info.Layers = {
 				{ "Ground", engine::level::ELayerType::Tiles },
 				{ "Decoration", engine::level::ELayerType::Tiles },
@@ -252,6 +251,10 @@ namespace engine::editor
 			if (level.HasLevel())
 			{
 				ImGui::Separator();
+				if (ImGui::Checkbox("Batch rendering", &engine::level::CChunk::BATCH_RENDERING_ENABLED))
+				{
+					engine::game::CGame::Get().GetLevelManager().RebuildChunksGeometry();
+				}
 
 				ImGui::BeginChild("Tools", { 260.f, 0.f }, ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
 				RenderToolbar();
@@ -890,8 +893,6 @@ namespace engine::editor
 
 		ImGui::InputText("Name", &m_NewLevel.Name);
 		ImGui::InputInt2("Tile size", &m_NewLevel.TileSize.x);
-		ImGui::SliderInt("Streaming radius", &m_NewLevel.StreamingRadius, 0, 4);
-
 		ImGui::SeparatorText("Layers");
 
 		int to_remove = -1;

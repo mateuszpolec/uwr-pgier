@@ -8,6 +8,7 @@
 #include "engine/camera/FocusCamera.hpp"
 #include "engine/game/Game.hpp"
 #include "engine/level/LevelManager.hpp"
+#include "engine/game/GameSettings.hpp"
 
 namespace engine::editor
 {
@@ -123,11 +124,6 @@ namespace engine::editor
 		}
 
 		ImGui::Checkbox("Snap on activate", &camera->SnapOnActivate);
-		ImGui::Checkbox("Keep previous zoom", &camera->KeepPreviousZoom);
-		ImGui::BeginDisabled(camera->KeepPreviousZoom);
-		ImGui::SliderFloat("Default zoom", &camera->DefaultZoom, 0.1f, 8.f, "%.2f", ImGuiSliderFlags_Logarithmic);
-		ImGui::EndDisabled();
-
 		if (ImGui::Button("Snap to target"))
 		{
 			camera->SnapToTarget();
@@ -140,6 +136,7 @@ namespace engine::editor
 		auto& game = engine::game::CGame::Get();
 		engine::camera::CCameraManager& cameras = game.GetCameraManager();
 		engine::level::CLevelManager& level = game.GetLevelManager();
+		engine::game::CGameSettings& settings = game.GetGameSettings();
 
 		ImGui::SliderFloat("Lookahead [s]", &cameras.StreamingLookahead, 0.f, 3.f);
 
@@ -149,7 +146,7 @@ namespace engine::editor
 		if (level.HasLevel())
 		{
 			ImGui::Text("Chunks loaded: %zu, pending: %zu", level.GetChunks().size(), level.GetPendingLoadsCount());
-			ImGui::Text("Streaming radius: %d chunk(s)", level.GetInfo().StreamingRadius);
+			ImGui::Text("Streaming radius: %d chunk(s)", settings.GetStreamingRadius());
 		}
 		else
 		{

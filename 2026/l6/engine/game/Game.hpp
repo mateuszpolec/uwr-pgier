@@ -16,6 +16,7 @@
 #include "engine/level/LevelManager.hpp"
 #include "engine/render/RenderQueue.hpp"
 #include "engine/camera/CameraManager.hpp"
+#include "engine/game/GameSettings.hpp"
 
 #if defined(DEBUG)
 #include "engine/editor/EditorManager.hpp"
@@ -65,6 +66,7 @@ namespace engine::game
 		[[nodiscard]] engine::level::CLevelManager& GetLevelManager() const { return *m_LevelManager; }
 		[[nodiscard]] engine::render::CRenderQueue& GetRenderQueue() const { return *m_RenderQueue; }
     [[nodiscard]] engine::camera::CCameraManager& GetCameraManager() const { return *m_CameraManager; }
+		[[nodiscard]] engine::game::CGameSettings& GetGameSettings() const { return *m_GameSettings; }
 
 #if defined(DEBUG)
 		[[nodiscard]] engine::editor::CEditorManager& GetEditorManager() const { return *m_EditorManager; }
@@ -111,6 +113,7 @@ namespace engine::game
 		std::unique_ptr<engine::level::CLevelManager> m_LevelManager;
 		std::unique_ptr<engine::render::CRenderQueue> m_RenderQueue;
     std::unique_ptr<engine::camera::CCameraManager> m_CameraManager;
+    std::unique_ptr<engine::game::CGameSettings> m_GameSettings;
 
 #if defined(DEBUG)
 		std::unique_ptr<engine::editor::CEditorManager> m_EditorManager;

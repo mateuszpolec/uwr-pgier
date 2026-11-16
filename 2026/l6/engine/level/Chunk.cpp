@@ -12,6 +12,8 @@
 
 namespace engine::level
 {
+	bool CChunk::BATCH_RENDERING_ENABLED = true;
+
 	CChunk::CChunk(SChunkData _data, sf::Vector2i _tile_size)
 		: m_Data(std::move(_data))
 		, m_TileSize(_tile_size)
@@ -101,12 +103,59 @@ namespace engine::level
 	{
 		engine::assets::CTilesetManager& tileset_manager = engine::game::CGame::Get().GetTilesetManager();
 
-		m_Layers.clear();
-		m_Layers.resize(m_Data.Layers.size());
-
 		const sf::Vector2f origin = GetWorldOrigin();
 		const sf::Vector2f tile_size = static_cast<sf::Vector2f>(m_TileSize);
 
+		if (!BATCH_RENDERING_ENABLED)
+		{
+			m_LayersSprite.clear();
+			m_LayersSprite.resize(m_Data.Layers.size());
+
+			for (size_t layer_index = 0; layer_index < m_Data.Layers.size(); ++layer_index)
+			{
+				const SLayerData& layer = m_Data.Layers[layer_index];
+				if (layer.Type != ELayerType::Tiles || !layer.Visible)
+				{
+					continue;
+				}
+
+				std::vector<sf::Sprite>& sprites = m_LayersSprite[layer_index];
+				sprites.clear();
+
+				for (int y = 0; y < CHUNK_SIZE; ++y)
+				{
+					for (int x = 0; x < CHUNK_SIZE; ++x)
+					{
+						const STile tile = layer.Get(LocalTileIndex(x, y));
+						if (!tile.IsValid())
+						{
+							continue;
+						}
+
+						const engine::assets::STileset* tileset = tileset_manager.FindTileset(tile.Tileset);
+						if (!tileset || !tileset->IsValid())
+						{
+							continue;
+						}
+
+						const std::optional<sf::IntRect> rect = tileset->GetTileRect(tile.Index);
+						if (!rect)
+						{
+							continue;
+						}
+
+						sf::Sprite& sprite = sprites.emplace_back(tileset->Texture.Get());
+						sprite.setTextureRect(*rect);
+						sprite.setPosition(origin + sf::Vector2f{ x * tile_size.x, y * tile_size.y });
+					}
+				}
+			}
+
+			return;
+		}
+
+		m_Layers.clear();
+		m_Layers.resize(m_Data.Layers.size());
 		for (size_t layer_index = 0; layer_index < m_Data.Layers.size(); ++layer_index)
 		{
 			const SLayerData& layer = m_Data.Layers[layer_index];
@@ -163,6 +212,15 @@ namespace engine::level
 	{
 		if (_layer_index >= m_Layers.size())
 		{
+			return;
+		}
+
+		if (!BATCH_RENDERING_ENABLED)
+		{
+			for (const sf::Sprite& sprite : m_LayersSprite[_layer_index])
+			{
+				_queue.Submit(static_cast<int>(_layer_index), engine::render::SORT_Y_BACKGROUND, sprite);
+			}
 			return;
 		}
 
