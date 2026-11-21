@@ -1,0 +1,32 @@
+{
+    "Components": 
+    {
+        "Transform": {},
+        "Renderable": { "Layer": "Objects" },
+        "Direction": { "Direction": "Down" },
+        "Animatable": 
+        {
+            "Animation": "player_move",
+            "Sequence": "idle_down",
+            "Speed": 1.0,
+            "AutoPlay": true
+        },
+        "RigidBody": 
+        { 
+            "Type": "Dynamic", 
+            "Mass": 1.0, 
+            "Restitution": 0.0, 
+            "Friction": 0.2 
+        },
+        "Collider": 
+        { 
+            "Shape": 
+            { 
+                "Type": "AABB", 
+                "Size": [32, 32]
+            },
+            "Offset": [0, 0],
+            "Layer": "Objects"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "Columns": 8,
+    "Margin": [
+        0,
+        0
+    ],
+    "Rows": 5,
+    "Spacing": [
+        0,
+        0
+    ],
+    "TexturePath": "textures\\tilemap_player_walk.png",
+    "TileSize": [
+        32,
+        32
+    ]
+}
