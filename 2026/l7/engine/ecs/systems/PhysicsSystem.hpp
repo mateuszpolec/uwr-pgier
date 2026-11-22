@@ -55,10 +55,6 @@ namespace engine::ecs::systems
 
 	private:
 
-		static constexpr float MAX_ACCUMULATED_TIME = 0.25f; // [s]
-		static constexpr float CORRECTION_PERCENT = 0.8f;
-		static constexpr float CORRECTION_SLOP = 0.01f; // [px]
-
 		float m_Accumulator = 0.f;
 
 		engine::physics::ECollisionSolver m_SolverType{ engine::physics::ECollisionSolver::Quadtree };

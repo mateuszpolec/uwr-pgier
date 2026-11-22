@@ -6,7 +6,7 @@
 
 #include "engine/events/NativeEvents.hpp"
 #include "engine/game/Game.hpp"
-
+#include "engine/game/GameVariables.hpp"
 
 namespace engine::game::player
 {
@@ -48,7 +48,7 @@ namespace engine::game::player
 			dir = dir.normalized();
 		}
 
-		m_Velocity = dir * MOVE_SPEED;
+		m_Velocity = dir * CGameVariables::Get<float>("PlayerMoveSpeed");
 		UpdateDirection();
 		UpdateAnimation();
 

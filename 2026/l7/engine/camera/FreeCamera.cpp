@@ -2,6 +2,7 @@
 #include "engine/game/Game.hpp"
 #include "engine/events/EventDispatcher.hpp"
 #include "engine/events/NativeEvents.hpp"
+#include "engine/game/GameVariables.hpp"
 
 namespace engine::camera
 {
@@ -54,7 +55,7 @@ namespace engine::camera
 			dir = dir.normalized();
 		}
 
-		velocity = dir * MOVE_SPEED;
+		velocity = dir * engine::game::CGameVariables::Get<float>("GameFreeCameraMoveSpeed");
 		GetState().Center += velocity * _dt;
 	}
 

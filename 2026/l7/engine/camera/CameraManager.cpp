@@ -6,6 +6,7 @@
 #include "engine/events/EventDispatcher.hpp"
 #include "engine/events/NativeEvents.hpp"
 #include "engine/game/Game.hpp"
+#include "engine/game/GameVariables.hpp"
 
 namespace engine::camera
 {
@@ -177,7 +178,7 @@ namespace engine::camera
 	sf::FloatRect CCameraManager::GetStreamingWorldRect() const
 	{
 		sf::FloatRect rect = GetVisibleWorldRect();
-		const sf::Vector2f lookahead = m_Velocity * StreamingLookahead;
+		const sf::Vector2f lookahead = m_Velocity * engine::game::CGameVariables::Get<float>("GameCameraStreamingLookahead");
 
 		if (lookahead.x < 0.f)
 		{

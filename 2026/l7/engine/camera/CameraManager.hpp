@@ -73,10 +73,6 @@ namespace engine::camera
 		[[nodiscard]] sf::FloatRect GetStreamingWorldRect() const;
 		[[nodiscard]] sf::Vector2f GetVelocity() const { return m_Velocity; }
 
-	public:
-
-		float StreamingLookahead = 0.75f; // [s]
-
 	private:
 
 		void RefreshView();

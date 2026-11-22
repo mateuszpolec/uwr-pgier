@@ -171,8 +171,6 @@ namespace engine::editor
 		engine::level::CLevelManager& level = game.GetLevelManager();
 		engine::game::CGameSettings& settings = game.GetGameSettings();
 
-		ImGui::SliderFloat("Lookahead [s]", &cameras.StreamingLookahead, 0.f, 3.f);
-
 		const sf::FloatRect streaming = cameras.GetStreamingWorldRect();
 		ImGui::Text("Streaming rect: [%.0f, %.0f] %.0f x %.0f", streaming.position.x, streaming.position.y, streaming.size.x, streaming.size.y);
 

@@ -7,6 +7,7 @@
 #endif
 
 #include "Game.hpp"
+#include "GameVariables.hpp"
 #include "engine/events/EventDispatcher.hpp"
 #include "engine/events/NativeEvents.hpp"
 #include "engine/core/Logger.hpp"
@@ -275,6 +276,7 @@ namespace engine::game
     m_JobSystem->Submit(
       [this]()
       {
+        CGameVariables::Load();
         m_AssetsManager->Load(engine::filesystem::Assets(), true, true);
         InitializeEcs();
         InitializeTilesets();

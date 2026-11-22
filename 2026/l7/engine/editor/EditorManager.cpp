@@ -6,6 +6,7 @@
 #include "engine/events/EventDispatcher.hpp"
 #include "engine/events/NativeEvents.hpp"
 #include "engine/game/Game.hpp"
+#include "engine/game/GameVariables.hpp"
 
 #include "StatsWidget.hpp"
 #include "JobSystemWidget.hpp"
@@ -201,6 +202,15 @@ namespace engine::editor
 			if (ImGui::BeginMenu("Help"))
 			{
 				ImGui::TextDisabled("Press '~' to toggle ImGui state");
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Reload"))
+			{
+				if (ImGui::MenuItem("Reload Game Variables"))
+				{
+					engine::game::CGameVariables::Load();
+				}
 				ImGui::EndMenu();
 			}
 

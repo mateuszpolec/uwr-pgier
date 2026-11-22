@@ -33,8 +33,6 @@ namespace engine::camera
 
 	private:
 
-		static constexpr float MOVE_SPEED = 300.f; // [px/s]
-
 		static constexpr std::array<std::pair<sf::Keyboard::Key, sf::Vector2f>, 8> MovementKeys =
 		{ {
 			std::make_pair(sf::Keyboard::Key::W, sf::Vector2f{ 0.f, -1.f }),

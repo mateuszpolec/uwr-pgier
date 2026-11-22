@@ -3,6 +3,7 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
+#include "engine/game/GameVariables.hpp"
 #include "CollisionSolver.hpp"
 
 namespace engine::physics
@@ -95,7 +96,7 @@ namespace engine::physics
 			if (m_Nodes[node].FirstChild < 0)
 			{
 				m_Nodes[node].Items.push_back(_item);
-				if (m_Nodes[node].Items.size() > MAX_ITEMS && m_Nodes[node].Depth < MAX_DEPTH)
+				if (m_Nodes[node].Items.size() > engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeMaxItems") && m_Nodes[node].Depth < engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeMaxDepth"))
 				{
 					Split(node, _bodies);
 				}
@@ -120,7 +121,7 @@ namespace engine::physics
 		const int depth = m_Nodes[_node].Depth + 1;
 
 		m_Nodes[_node].FirstChild = static_cast<std::int32_t>(m_Nodes.size());
-		for (int i = 0; i < CHILD_COUNT; ++i)
+		for (int i = 0; i < engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeChildCount"); ++i)
 		{
 			const sf::Vector2f offset{ static_cast<float>(i % 2) * half.x, static_cast<float>(i / 2) * half.y };
 			m_Nodes.push_back(SNode{ { bounds.position + offset, half }, depth });
@@ -139,7 +140,7 @@ namespace engine::physics
 
 	std::int32_t CQuadtreeSolver::FindChild(std::int32_t _node, const sf::FloatRect& _bounds) const
 	{
-		for (int i = 0; i < CHILD_COUNT; ++i)
+		for (int i = 0; i < engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeChildCount"); ++i)
 		{
 			const std::int32_t child = m_Nodes[_node].FirstChild + i;
 			if (Contains(m_Nodes[child].Bounds, _bounds))
@@ -167,7 +168,7 @@ namespace engine::physics
 			return;
 		}
 
-		for (int i = 0; i < CHILD_COUNT; ++i)
+		for (int i = 0; i < engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeChildCount"); ++i)
 		{
 			for (const std::uint32_t item : node.Items)
 			{
@@ -195,7 +196,7 @@ namespace engine::physics
 			return;
 		}
 
-		for (int i = 0; i < CHILD_COUNT; ++i)
+		for (int i = 0; i < engine::game::CGameVariables::Get<int>("GamePhysicsQuadtreeChildCount"); ++i)
 		{
 			CollectAgainstSubtree(_item, node.FirstChild + i, _bodies, _pairs);
 		}

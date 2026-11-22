@@ -10,6 +10,7 @@
 
 #include "engine/game/Game.hpp"
 #include "engine/level/LevelManager.hpp"
+#include "engine/game/GameVariables.hpp"
 
 namespace engine::ecs::systems
 {
@@ -38,7 +39,7 @@ namespace engine::ecs::systems
 
 	void CPhysicsSystem::Frame(CEntityManager& _components, float _dt)
 	{
-		m_Accumulator = std::min(m_Accumulator + _dt, MAX_ACCUMULATED_TIME);
+		m_Accumulator = std::min(m_Accumulator + _dt, engine::game::CGameVariables::Get<float>("GamePhysicsMaxAccumulatedTime"));
 
 		while (m_Accumulator >= FIXED_DT)
 		{
@@ -206,7 +207,7 @@ namespace engine::ecs::systems
 		}
 
 		// Positional correction
-		const sf::Vector2f correction = normal * (std::max(_manifold.Penetration - CORRECTION_SLOP, 0.f) / inv_mass_sum * CORRECTION_PERCENT);
+		const sf::Vector2f correction = normal * (std::max(_manifold.Penetration - engine::game::CGameVariables::Get<float>("GamePhysicsCorrectionSlop"), 0.f) / inv_mass_sum * engine::game::CGameVariables::Get<float>("GamePhysicsCorrectionPercent"));
 		_a.Translate(-correction * _a.InvMass);
 		_b.Translate(correction * _b.InvMass);
 	}

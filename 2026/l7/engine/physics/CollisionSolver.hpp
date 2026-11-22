@@ -90,10 +90,6 @@ namespace engine::physics
 	private:
 
 		static constexpr sf::Color DEBUG_COLOR{ 0, 200, 255, 160 };
-		static constexpr size_t MAX_ITEMS = 8;
-		static constexpr int MAX_DEPTH = 6;
-		static constexpr int CHILD_COUNT = 4;
-
 		std::vector<SNode> m_Nodes;
 	};
 }
