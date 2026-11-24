@@ -45,8 +45,8 @@ namespace engine::ecs::systems
 		{
 			Integrate(_components);
 			CollectBodies(_components);
+			CollectLevelBodies();
 			SolveBodies();
-			SolveTiles();
 			m_Accumulator -= FIXED_DT;
 		}
 	}
@@ -77,6 +77,27 @@ namespace engine::ecs::systems
 		{
 				m_Bodies.push_back(MakeBody(_collider, _transform, _components.FindComponent<engine::ecs::components::SCoRigidBody>(_id)));
 		});
+	}
+
+	void CPhysicsSystem::CollectLevelBodies()
+	{
+		for (const auto& [coord, chunk] : engine::game::CGame::Get().GetLevelManager().GetChunks())
+		{
+			const sf::Vector2f origin = chunk->GetWorldOrigin();
+
+			for (const engine::level::SLayerData& layer : chunk->GetData().Layers)
+			{
+				for (const engine::level::SCollisionRectData& rect : layer.CollisionRects)
+				{
+					engine::physics::SBody body;
+					body.Shape = engine::physics::SAabbShape{ rect.Size };
+					body.Position = origin + rect.Position;
+					body.Layer = layer.Name;
+					body.Friction = rect.Friction;
+					m_Bodies.push_back(body);
+				}
+			}
+		}
 	}
 
 	engine::physics::SBody CPhysicsSystem::MakeBody(const engine::ecs::components::SCoCollider& _collider, engine::ecs::components::SCoTransform& _transform, engine::ecs::components::SCoRigidBody* _rigid_body)
@@ -110,68 +131,6 @@ namespace engine::ecs::systems
 			if (const std::optional<engine::physics::SManifold> manifold = TestBodies(m_Bodies[pair.A], m_Bodies[pair.B]))
 			{
 				Resolve(m_Bodies[pair.A], m_Bodies[pair.B], *manifold);
-			}
-		}
-	}
-
-	void CPhysicsSystem::SolveTiles()
-	{
-		if (m_SolverType == engine::physics::ECollisionSolver::NoCollision)
-		{
-			return;
-		}
-
-		const engine::level::CLevelManager& level = engine::game::CGame::Get().GetLevelManager();
-		if (!level.HasLevel())
-		{
-			return;
-		}
-
-		engine::physics::SBody tile_body;
-		tile_body.Shape = engine::physics::SAabbShape{ static_cast<sf::Vector2f>(level.GetInfo().TileSize) };
-
-		for (engine::physics::SBody& body : m_Bodies)
-		{
-			if (body.InvMass <= 0.f)
-			{
-				continue;
-			}
-
-			const sf::FloatRect bounds = body.GetBounds();
-			const sf::Vector2i min = level.WorldToTile(bounds.position);
-			const sf::Vector2i max = level.WorldToTile(bounds.position + bounds.size);
-
-			for (const engine::level::SLayerInfo& layer : level.GetInfo().Layers)
-			{
-				if (!body.IsOnLayer(layer.Name))
-				{
-					continue;
-				}
-
-				for (int y = min.y; y <= max.y; ++y)
-				{
-					for (int x = min.x; x <= max.x; ++x)
-					{
-						const sf::Vector2i tile{ x, y };
-						if (!level.IsColliderAt(layer.Name, tile))
-						{
-							continue;
-						}
-
-						tile_body.Position = level.TileToWorld(tile);
-
-						const std::optional<engine::physics::SManifold> manifold = TestBodies(tile_body, body);
-						if (!manifold)
-						{
-							continue;
-						}
-
-						if (!level.IsColliderAt(layer.Name, tile + static_cast<sf::Vector2i>(manifold->Normal)))
-						{
-							Resolve(tile_body, body, *manifold);
-						}
-					}
-				}
 			}
 		}
 	}
@@ -261,7 +220,11 @@ namespace engine::ecs::systems
 		}
 		if (hit.IsTile())
 		{
-			hit.TileData = engine::game::CGame::Get().GetLevelManager().GetTile(hit.Layer, hit.Tile).value_or(engine::level::STile{});
+			constexpr float TILE_NUDGE = 0.5f;
+
+			const engine::level::CLevelManager& level = engine::game::CGame::Get().GetLevelManager();
+			hit.Tile = level.WorldToTile(hit.Point - hit.Normal.componentWiseMul(_params.Size * 0.5f) - hit.Normal * TILE_NUDGE);
+			hit.TileData = level.GetTile(hit.Layer, hit.Tile).value_or(engine::level::STile{});
 		}
 
 		return hit;
@@ -269,65 +232,25 @@ namespace engine::ecs::systems
 
 	void CPhysicsSystem::TraceTiles(const engine::physics::STraceParams& _params, engine::physics::STraceHit& _hit)
 	{
-		constexpr float INF = std::numeric_limits<float>::infinity();
-
-		const engine::level::CLevelManager& level = engine::game::CGame::Get().GetLevelManager();
-		if (!level.HasLevel())
+		for (const auto& [coord, chunk] : engine::game::CGame::Get().GetLevelManager().GetChunks())
 		{
-			return;
-		}
+			const sf::Vector2f origin = chunk->GetWorldOrigin();
 
-		const sf::Vector2f tile_size = static_cast<sf::Vector2f>(level.GetInfo().TileSize);
-		const sf::Vector2f delta = _params.End - _params.Start;
-
-		const sf::Vector2i reach{
-			static_cast<int>(std::ceil(_params.Size.x * 0.5f / tile_size.x)),
-			static_cast<int>(std::ceil(_params.Size.y * 0.5f / tile_size.y))
-		};
-
-		sf::Vector2i cell = level.WorldToTile(_params.Start);
-		const sf::Vector2i step{ (delta.x > 0.f) - (delta.x < 0.f), (delta.y > 0.f) - (delta.y < 0.f) };
-		const sf::Vector2f t_delta{
-			step.x != 0 ? tile_size.x / std::abs(delta.x) : INF,
-			step.y != 0 ? tile_size.y / std::abs(delta.y) : INF
-		};
-		sf::Vector2f t_next{
-			step.x != 0 ? (static_cast<float>(cell.x + (step.x > 0 ? 1 : 0)) * tile_size.x - _params.Start.x) / delta.x : INF,
-			step.y != 0 ? (static_cast<float>(cell.y + (step.y > 0 ? 1 : 0)) * tile_size.y - _params.Start.y) / delta.y : INF
-		};
-
-		float t_enter = 0.f;
-		while (t_enter <= _hit.Fraction)
-		{
-			for (int y = cell.y - reach.y; y <= cell.y + reach.y; ++y)
+			for (const engine::level::SLayerData& layer : chunk->GetData().Layers)
 			{
-				for (int x = cell.x - reach.x; x <= cell.x + reach.x; ++x)
+				if (!_params.IncludesLayer(layer.Name))
 				{
-					const sf::Vector2i tile{ x, y };
+					continue;
+				}
 
-					for (const engine::level::SLayerInfo& layer : level.GetInfo().Layers)
+				for (const engine::level::SCollisionRectData& rect : layer.CollisionRects)
+				{
+					if (TraceRect(_params, rect.GetWorldBounds(origin), _hit))
 					{
-						if (_params.IncludesLayer(layer.Name) && level.IsColliderAt(layer.Name, tile) && TraceRect(_params, { level.TileToWorld(tile), tile_size }, _hit))
-						{
-							_hit.Type = engine::physics::ETraceHitType::Tile;
-							_hit.Tile = tile;
-							_hit.Layer = layer.Name;
-						}
+						_hit.Type = engine::physics::ETraceHitType::Tile;
+						_hit.Layer = layer.Name;
 					}
 				}
-			}
-
-			if (t_next.x < t_next.y)
-			{
-				t_enter = t_next.x;
-				t_next.x += t_delta.x;
-				cell.x += step.x;
-			}
-			else
-			{
-				t_enter = t_next.y;
-				t_next.y += t_delta.y;
-				cell.y += step.y;
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 
 #include "engine/events/EventHandle.hpp"
 #include "notifications/NotificationManager.hpp"
-#include "Widget.hpp"
+#include "engine/editor/widgets/Widget.hpp"
 
 namespace engine::editor
 {

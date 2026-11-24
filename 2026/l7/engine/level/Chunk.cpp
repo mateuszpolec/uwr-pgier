@@ -1,9 +1,8 @@
-#include "Chunk.hpp"
-
 #include <optional>
 #include <string>
 #include <unordered_map>
 
+#include "Chunk.hpp"
 #include "engine/core/Logger.hpp"
 #include "engine/ecs/Entity.hpp"
 #include "engine/ecs/components/Component_Transform.hpp"
@@ -178,15 +177,6 @@ namespace engine::level
 		}
 	}
 
-	bool CChunk::IsColliderAt(size_t _layer_index, int _local_x, int _local_y) const
-	{
-		if (_layer_index >= m_Data.Layers.size())
-		{
-			return false;
-		}
-		return m_Data.Layers[_layer_index].IsColliderAt(LocalTileIndex(_local_x, _local_y));
-	}
-
 	void CChunk::RenderDebug(sf::RenderTarget& _target, size_t _layer_index, sf::Color _color) const
 	{
 		if (_layer_index >= m_Data.Layers.size())
@@ -194,24 +184,12 @@ namespace engine::level
 			return;
 		}
 
-		const SLayerData& layer = m_Data.Layers[_layer_index];
-		const sf::Vector2f origin = GetWorldOrigin();
-		const sf::Vector2f tile_size = static_cast<sf::Vector2f>(m_TileSize);
-
 		sf::VertexArray va(sf::PrimitiveType::Triangles);
 
-		for (int y = 0; y < CHUNK_SIZE; ++y)
+		for (const SCollisionRectData& rect : m_Data.Layers[_layer_index].CollisionRects)
 		{
-			for (int x = 0; x < CHUNK_SIZE; ++x)
-			{
-				if (!layer.IsColliderAt(LocalTileIndex(x, y)))
-				{
-					continue;
-				}
-
-				const sf::Vector2f p0 = origin + sf::Vector2f{ x * tile_size.x, y * tile_size.y };
-				AppendQuad(va, p0, p0 + tile_size, {}, {}, _color);
-			}
+			const sf::FloatRect bounds = rect.GetWorldBounds(GetWorldOrigin());
+			AppendQuad(va, bounds.position, bounds.position + bounds.size, {}, {}, _color);
 		}
 
 		if (va.getVertexCount() > 0)

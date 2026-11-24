@@ -249,6 +249,11 @@ namespace engine::level
 		return { static_cast<float>(_tile.x * m_Info->TileSize.x), static_cast<float>(_tile.y * m_Info->TileSize.y) };
 	}
 
+	sf::FloatRect CLevelManager::TilesToWorld(const sf::IntRect& _tiles) const
+	{
+		return { TileToWorld(_tiles.position), TileToWorld(_tiles.size) };
+	}
+
 	SChunkCoordinates CLevelManager::TileToChunk(sf::Vector2i _tile) const
 	{
 		auto fn_floor_div = [](int _a, int _b) -> int
@@ -326,14 +331,15 @@ namespace engine::level
 		}
 	}
 
-	bool CLevelManager::SetCollider(std::string_view _layer, sf::Vector2i _tile, bool _solid)
+	bool CLevelManager::AddCollisionRect(std::string_view _layer, const sf::IntRect& _tiles, float _friction)
 	{
 		if (!m_Info)
 		{
 			return false;
 		}
 
-		CChunk& chunk = GetOrCreateChunk(TileToChunk(_tile));
+		// The rect is owned by the chunk containing its top-left tile
+		CChunk& chunk = GetOrCreateChunk(TileToChunk(_tiles.position));
 		SLayerData* layer = chunk.GetData().FindLayer(_layer);
 		if (!layer)
 		{
@@ -341,45 +347,74 @@ namespace engine::level
 			return false;
 		}
 
-		const sf::Vector2i local = TileToLocal(_tile);
-		const int index = CChunk::LocalTileIndex(local.x, local.y);
-		if (layer->IsColliderAt(index) == _solid)
-		{
-			return false;
-		}
-
-		layer->SetColliderAt(index, _solid);
+		const sf::FloatRect world = TilesToWorld(_tiles);
+		layer->CollisionRects.push_back({ world.position - chunk.GetWorldOrigin(), world.size, _friction });
 		chunk.MarkDirty();
 		return true;
 	}
 
-	bool CLevelManager::IsColliderAt(std::string_view _layer, sf::Vector2i _tile) const
+	// Removes every rect of the layer that overlaps the given tiles
+	bool CLevelManager::RemoveCollisionRects(std::string_view _layer, const sf::IntRect& _tiles)
 	{
-		const int layer_index = m_Info ? m_Info->FindLayerIndex(_layer) : -1;
-		if (layer_index < 0)
+		if (!m_Info)
 		{
 			return false;
 		}
 
-		const CChunk* chunk = FindChunk(TileToChunk(_tile));
-		if (!chunk || chunk->State != EChunkState::Ready)
-		{
-			return true;
-		}
+		const sf::FloatRect world = TilesToWorld(_tiles);
+		bool removed = false;
 
-		const sf::Vector2i local = TileToLocal(_tile);
-		return chunk->IsColliderAt(static_cast<size_t>(layer_index), local.x, local.y);
-	}
-
-	void CLevelManager::FillColliders(std::string_view _layer, const sf::IntRect& _tiles, bool _solid)
-	{
-		for (int y = _tiles.position.y; y < _tiles.position.y + _tiles.size.y; ++y)
+		for (auto& [coord, chunk] : m_Chunks)
 		{
-			for (int x = _tiles.position.x; x < _tiles.position.x + _tiles.size.x; ++x)
+			SLayerData* layer = chunk->GetData().FindLayer(_layer);
+			if (!layer)
 			{
-				SetCollider(_layer, { x, y }, _solid);
+				continue;
+			}
+
+			const sf::Vector2f origin = chunk->GetWorldOrigin();
+			const size_t count = std::erase_if(layer->CollisionRects, [&world, &origin](const SCollisionRectData& _rect)
+				{
+					return world.findIntersection(_rect.GetWorldBounds(origin)).has_value();
+				});
+
+			if (count > 0)
+			{
+				chunk->MarkDirty();
+				removed = true;
 			}
 		}
+
+		return removed;
+	}
+
+	const SCollisionRectData* CLevelManager::FindCollisionRect(std::string_view _layer, sf::Vector2i _tile) const
+	{
+		if (!m_Info)
+		{
+			return nullptr;
+		}
+
+		const sf::FloatRect world = TilesToWorld({ _tile, { 1, 1 } });
+
+		for (const auto& [coord, chunk] : m_Chunks)
+		{
+			const SLayerData* layer = chunk->GetData().FindLayer(_layer);
+			if (!layer)
+			{
+				continue;
+			}
+
+			for (const SCollisionRectData& rect : layer->CollisionRects)
+			{
+				if (world.findIntersection(rect.GetWorldBounds(chunk->GetWorldOrigin())))
+				{
+					return &rect;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	bool CLevelManager::AddPrefabInstance(std::string_view _layer, sf::Vector2f _world_position, const std::string& _prefab, const std::string& _preset)

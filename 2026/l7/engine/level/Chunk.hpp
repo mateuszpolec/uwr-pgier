@@ -40,8 +40,6 @@ namespace engine::level
 		void RenderLayer(engine::render::CRenderQueue& _queue, size_t _layer_index) const;
 		void RenderDebug(sf::RenderTarget& _target, size_t _layer_index, sf::Color _color) const;
 
-		[[nodiscard]] bool IsColliderAt(size_t _layer_index, int _local_x, int _local_y) const;
-
 		[[nodiscard]] SChunkData& GetData() { return m_Data; }
 		[[nodiscard]] const SChunkData& GetData() const { return m_Data; }
 		[[nodiscard]] const SChunkCoordinates& GetCoord() const { return m_Data.Coordinates; }

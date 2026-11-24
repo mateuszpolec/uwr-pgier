@@ -38,8 +38,8 @@ namespace engine::ecs::systems
 
 		void Integrate(CEntityManager& _components) const;
 		void CollectBodies(CEntityManager& _components);
+		void CollectLevelBodies();
 		void SolveBodies();
-		void SolveTiles();
 
 		[[nodiscard]] static engine::physics::SBody MakeBody(const components::SCoCollider& _collider, components::SCoTransform& _transform, components::SCoRigidBody* _rigid_body);
 		static void Resolve(engine::physics::SBody& _a, engine::physics::SBody& _b, const engine::physics::SManifold& _manifold);

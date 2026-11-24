@@ -8,13 +8,13 @@
 #include "engine/game/Game.hpp"
 #include "engine/game/GameVariables.hpp"
 
-#include "StatsWidget.hpp"
-#include "JobSystemWidget.hpp"
-#include "AssetsBrowserWidget.hpp"
-#include "AnimationsWidget.hpp"
-#include "SceneViewWidget.hpp"
-#include "LevelEditorWidget.hpp"
-#include "CameraWidget.hpp"
+#include "engine/editor/widgets/StatsWidget.hpp"
+#include "engine/editor/widgets/JobSystemWidget.hpp"
+#include "engine/editor/widgets/AssetsBrowserWidget.hpp"
+#include "engine/editor/widgets/AnimationsWidget.hpp"
+#include "engine/editor/widgets/SceneViewWidget.hpp"
+#include "engine/editor/widgets/LevelEditorWidget.hpp"
+#include "engine/editor/widgets/CameraWidget.hpp"
 
 namespace engine::editor
 {

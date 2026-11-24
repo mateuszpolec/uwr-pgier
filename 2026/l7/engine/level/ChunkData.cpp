@@ -5,7 +5,6 @@ namespace engine::level
 	void SLayerData::SetDefaultSize()
 	{
 		Tiles.resize(CHUNK_AREA, engine::assets::INVALID_TILE_INDEX);
-		Colliders.resize(CHUNK_AREA, 0);
 	}
 
 	STile SLayerData::Get(int _local_index) const
@@ -47,16 +46,6 @@ namespace engine::level
 		Tiles[_local_index] = (tileset_index << TILESET_SHIFT) | (_tile.Index & INDEX_MASK);
 	}
 
-	bool SLayerData::IsColliderAt(int _local_index) const
-	{
-		return Colliders[_local_index] != 0;
-	}
-
-	void SLayerData::SetColliderAt(int _local_index, bool _has_collider)
-	{
-		Colliders[_local_index] = _has_collider ? 1 : 0;
-	}
-
 	bool SLayerData::IsEmptyTileAt(int _local_index) const
 	{
 		return Tiles[_local_index] == engine::assets::INVALID_TILE_INDEX;
@@ -69,7 +58,7 @@ namespace engine::level
 
 	int SLayerData::CountColliders() const
 	{
-		return static_cast<int>(std::count_if(Colliders.begin(), Colliders.end(), [](uint8_t collider) { return collider != 0; }));
+		return CollisionRects.size();
 	}
 
 	SLayerData* SChunkData::FindLayer(std::string_view _name)

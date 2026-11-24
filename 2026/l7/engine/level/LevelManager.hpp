@@ -51,6 +51,7 @@ namespace engine::level
 
 		[[nodiscard]] sf::Vector2i WorldToTile(sf::Vector2f _world) const;
 		[[nodiscard]] sf::Vector2f TileToWorld(sf::Vector2i _tile) const;
+		[[nodiscard]] sf::FloatRect TilesToWorld(const sf::IntRect& _tiles) const;
 		[[nodiscard]] SChunkCoordinates TileToChunk(sf::Vector2i _tile) const;
 		[[nodiscard]] sf::Vector2i TileToLocal(sf::Vector2i _tile) const;
 		[[nodiscard]] SChunkCoordinates WorldToChunk(sf::Vector2f _world) const { return TileToChunk(WorldToTile(_world)); }
@@ -59,9 +60,9 @@ namespace engine::level
 		[[nodiscard]] std::optional<STile> GetTile(std::string_view _layer, sf::Vector2i _tile) const;
 		void FillTiles(std::string_view _layer, const sf::IntRect& _tiles, const STile& _value);
 
-		bool SetCollider(std::string_view _layer, sf::Vector2i _tile, bool _solid);
-		[[nodiscard]] bool IsColliderAt(std::string_view _layer, sf::Vector2i _tile) const;
-		void FillColliders(std::string_view _layer, const sf::IntRect& _tiles, bool _solid);
+		bool AddCollisionRect(std::string_view _layer, const sf::IntRect& _tiles, float _friction);
+		bool RemoveCollisionRects(std::string_view _layer, const sf::IntRect& _tiles);
+		[[nodiscard]] const SCollisionRectData* FindCollisionRect(std::string_view _layer, sf::Vector2i _tile) const;
 
 		bool AddPrefabInstance(std::string_view _layer, sf::Vector2f _world_position, const std::string& _prefab, const std::string& _preset = {});
 		bool RemovePrefabInstance(std::string_view _layer, const SChunkCoordinates& _chunk, size_t _index);

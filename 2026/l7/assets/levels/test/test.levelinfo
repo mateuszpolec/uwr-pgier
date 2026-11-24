@@ -5,16 +5,15 @@
             "Type": "Tiles"
         },
         {
-            "Name": "Objects",
-            "Type": "Objects"
-        },
-        {
             "Name": "Decoration",
             "Type": "Tiles"
+        },
+        {
+            "Name": "Objects",
+            "Type": "Objects"
         }
     ],
     "Name": "test",
-    "StreamingRadius": 1,
     "TileSize": [
         32,
         32
